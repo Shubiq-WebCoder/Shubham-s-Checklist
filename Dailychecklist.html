@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shubham's Daily Checklist</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #7c3aed;
+            --text-color: #e5e7eb;
+            --dark-bg: #111827;
+            --card-bg: #1f2937;
+            --item-bg: #374151;
+            --highlight-bg: #1e3a8a;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .checklist-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            position: relative;
+            margin-top: 0;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+        }
+        
+        .date-display {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            background: var(--item-bg);
+            border-radius: 6px;
+            position: relative;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        
+        .checklist-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        .checklist-item input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        
+        .reset-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            font-style: italic;
+        }
+        
+        /* Shubham Folder Styles */
+        .folder {
+            margin-top: 40px;
+            background: #1e293b;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+        
+        .folder-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--primary-color);
+            cursor: pointer;
+            user-select: none;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .folder-header:hover {
+            background: #1e3a8a20;
+        }
+        
+        .folder-header h2 {
+            margin-left: 12px;
+            font-size: 1.3rem;
+            flex: 1;
+        }
+        
+        .folder-toggle {
+            transition: transform 0.3s ease;
+        }
+        
+        .folder.collapsed .folder-toggle {
+            transform: rotate(-90deg);
+        }
+        
+        .folder-content {
+            padding: 0 20px;
+            max-height: 2000px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .folder.collapsed .folder-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        
+        .folder-section {
+            margin-bottom: 25px;
+            padding-top: 20px;
+        }
+        
+        .folder-section h3 {
+            color: var(--accent-color);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .quote {
+            font-style: italic;
+            padding: 12px 15px;
+            background: #1e293b;
+            border-left: 3px solid var(--accent-color);
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .goals-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .goal-card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .goal-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .routine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .routine-day {
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .routine-day strong {
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 6px;
+        }
+        
+        strong {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .checklist-card {
+                padding: 20px;
+            }
+            
+            .goals-container, .routine-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checklist-card">
+            <h1>BUSINESSMAN'S DAILY CHECKLIST</h1>
+            <div class="date-display" id="currentDate"></div>
+            
+            <ul class="checklist">
+                <li class="checklist-item">
+                    <input type="checkbox" id="task1">
+                    <label for="task1">5:00 AM - Cold Shower & Morning Ritual</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task2">
+                    <label for="task2">Gym Session (Follow 2025 Routine)</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task3">
+                    <label for="task3">Strategic Planning (Daily Goals Review)</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task4">
+                    <label for="task4">High-Protein Breakfast & Supplements</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task5">
+                    <label for="task5">Deep Work Session (3-4 hours focused)</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task6">
+                    <label for="task6">Networking/Relationship Building</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task7">
+                    <label for="task7">Skill Development (1 hour minimum)</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task8">
+                    <label for="task8">Financial/Business Growth Tasks</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task9">
+                    <label for="task9">Evening Reflection & Journaling</label>
+                </li>
+                <li class="checklist-item">
+                    <input type="checkbox" id="task10">
+                    <label for="task10">10:00 PM - Wind Down & Sleep</label>
+                </li>
+            </ul>
+            
+            <div class="reset-info">
+                This elite performance checklist resets daily at midnight
+            </div>
+            
+            <!-- Shubham Folder -->
+            <div class="folder collapsed">
+                <div class="folder-header" onclick="toggleFolder()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="folder-toggle">
+                        <path d="M19 9L12 15L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h2>Shubham's 2025 Blueprint</h2>
+                </div>
+                
+                <div class="folder-content">
+                    <div class="folder-section">
+                        <h3>📝 2025 plotting</h3>
+                        <p><strong>Clear Goals in 2025</strong></p>
+                    </div>
+                    
+                    <div class="folder-section">
+                        <h3>➡️ 2025 theme: Businessman</h3>
+                        <p>I am going from Student to BUSINESSMAN who has best <strong>physique</strong></p>
+                    </div>
+                    
+                    <div class="folder-section">
+                        <h3>⭐️ Your 1 Big Thing</h3>
+                        <p>Self obsession and Good deeds and make everyone feel guilt</p>
+                    </div>
+                    
+                    <div class="folder-section">
+                        <h3>🖋️ 2025 quote</h3>
+                        <div class="quote">"There is a seat waiting for you at tables you haven't even seen"</div>
+                    </div>
+                    
+                    <div class="folder-section">
+                        <h3>🏅 2025 Goals</h3>
+                        
+                        <h4>Strength & Body Composition</h4>
+                        <p><strong>Goal</strong>: 12% Body Fat | +10lbs Lean Muscle</p>
+                        
+                        <div class="routine-grid">
+                            <div class="routine-day">
+                                <strong>Mon/Thu</strong>
+                                Upper Body (Bench 5x5, Pull-Ups 4x8, Shoulder Press)
+                            </div>
+                            <div class="routine-day">
+                                <strong>Tue/Fri</strong>
+                                Lower Body (Squats 5x5, Deadlifts 3x5, Lunges)
+                            </div>
+                            <div class="routine-day">
+                                <strong>Wed/Sat</strong>
+                                Mobility + Core (Planks, Hanging Leg Raises, Yoga)
+                            </div>
+                            <div class="routine-day">
+                                <strong>Sun</strong>
+                                Active Recovery (Walk/Hike)
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin-top: 15px;">Endurance</h4>
+                        <p><strong>Goal</strong>: 5K in <22 mins | 10 Unbroken Muscle-Ups</p>
+                        <p><strong>Action</strong>: Add 15-min sprint intervals (Tue/Thu post-gym)</p>
+                        
+                        <h4 style="margin-top: 15px;">Discipline</h4>
+                        <ul>
+                            <li><strong>No Porn</strong>: Redirect urges to workout/skill practice.</li>
+                            <li><strong>No Junk</strong>: Sunday meal prep = grilled chicken, quinoa, roasted veggies.</li>
+                            <li><strong>Skill Hack</strong>: Join 1 online community (e.g., r/learnpython, Indie Hackers).</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="folder-section">
+                        <h3>🎯 Goal Sections</h3>
+                        <div class="goals-container">
+                            <div class="goal-card">
+                                <h4>Goal 1: Physical & Mental Mastery</h4>
+                                <p>Gym, cold showers, mindfulness.</p>
+                            </div>
+                            <div class="goal-card">
+                                <h4>Goal 2: Academic Excellence</h4>
+                                <p>Stay focused, network, and leverage college.</p>
+                            </div>
+                            <div class="goal-card">
+                                <h4>Goal 3: Financial/Business Growth</h4>
+                                <p><em>Special Task</em> time for strategic actions.</p>
+                            </div>
+                            <div class="goal-card">
+                                <h4>Goal 4: Discipline</h4>
+                                <p>No porn, no junk food, balanced relationships.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Display current date
+        function updateDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
+        }
+        
+        // Check if it's a new day and reset checkboxes
+        function checkForNewDay() {
+            const today = new Date().toDateString();
+            const lastReset = localStorage.getItem('lastResetDate');
+            
+            if (lastReset !== today) {
+                // Reset all checkboxes
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Update last reset date
+                localStorage.setItem('lastResetDate', today);
+            }
+        }
+        
+        // Save checkbox states
+        function saveCheckboxStates() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.addEventListener('change', function() {
+                    localStorage.setItem(`task${index+1}`, this.checked);
+                });
+                
+                // Load saved state
+                const savedState = localStorage.getItem(`task${index+1}`);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                }
+            });
+        }
+        
+        // Toggle folder
+        function toggleFolder() {
+            const folder = document.querySelector('.folder');
+            folder.classList.toggle('collapsed');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDate();
+            checkForNewDay();
+            saveCheckboxStates();
+            
+            // Check every minute if it's midnight
+            setInterval(checkForNewDay, 60000);
+        });
+    </script>
+</body>
+</html>
